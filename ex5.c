@@ -1,3 +1,9 @@
+/******************
+Name: Dan Sonnenblick
+ID: 345287882
+Assignment: ex5
+*******************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
