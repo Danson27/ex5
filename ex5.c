@@ -224,33 +224,38 @@ void removePlaylist(Playlist ** playlists, int *currentAmount) {
     if (selection == *currentAmount+1) {
         return;
     }
-
+    if (selection < 0 || selection >= *currentAmount) {
+        printf("Invalid playlist index.\n");
+        return;
+    }
     if (selection >= 1 && selection <= *currentAmount) {
-            Playlist *toDelete = playlists[selection-1];
+        Playlist toDelete = (*playlists)[selection-1];
             for (int i = 0; i < playlists[selection-1]->songsNum; i++) {
-                free(toDelete->songs[i]->title);
-                free(toDelete->songs[i]->artist);
-                free(toDelete->songs[i]->lyrics);
-                free(toDelete->songs[i]);
+                free(toDelete.songs[i]->title);
+                free(toDelete.songs[i]->artist);
+                free(toDelete.songs[i]->lyrics);
+                free(toDelete.songs[i]);
             }
-
-
-        free(toDelete->name);
-        free(toDelete->songs);
-        free(toDelete);
+        free(toDelete.name);
+        free(toDelete.songs);
+        free((playlists)[selection-1]);
 
         for (int i = selection-1; i < (*currentAmount)-1; i++) {
-            (playlists)[i] = (playlists)[i+1];
+            (*playlists)[i] = (*playlists)[i+1];
         }
 
         (*currentAmount)--;
-
-        Playlist *temp = realloc(*playlists, (*currentAmount) * sizeof(Playlist*));
-        if (temp == NULL && *currentAmount > 0) {
-            printf("Memory reallocation failed after removing playlist.\n");
-            exit(1);
+        if (*currentAmount > 0) {
+            Playlist *temp = realloc(*playlists, (*currentAmount) * sizeof(Playlist*));
+            if (temp == NULL && *currentAmount > 0) {
+                printf("Memory reallocation failed after removing playlist.\n");
+                exit(1);
+            }
+            *playlists = temp;
+        } else {
+            free(*playlists);
+            *playlists = NULL;
         }
-        *playlists = temp;
 
         printf("Playlist deleted.\n");
     }
