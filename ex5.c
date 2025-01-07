@@ -36,7 +36,7 @@ void sortPlaylist();
 void freePlaylist();
 
 void addSong(Playlist* playlists, Playlist* playlist, int currentAmount);
-void deleteSong();
+void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount);
 void playSong();
 void freeSong();
 
@@ -70,7 +70,7 @@ int main() {
                 case 2: {
                     addPlaylist(&playlists, &playlistAmount);
                     break;
-                }  
+                }
                 // case 3, to remove a specific playlist
                 case 3: {
                     //removePlaylist();
@@ -188,19 +188,23 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int currentAmo
             return;
         }
         case 3: {
-            deleteSong();
+            deleteSong(playlists, playlist, &currentAmount);
             break;
         }
         case 4: {
-            sortPlaylist();
+            //sortPlaylist();
             break;
         }
         case 5: {
             //playPlaylist();
-            break;
+            for (int i = 0; i < currentAmount+1; i++) {
+                printf("Now playing %s:\n", playlist->songs[i]->title);
+                printf("$ %s $\n ", playlist->songs[i]->lyrics);
+            }
+            displayPlaylistMenu(playlists, playlist, currentAmount);
+            return;
         }
         case 6: {
-
             watchPlaylists(&playlists, currentAmount);
             return;
         }
@@ -276,9 +280,28 @@ void addSong(Playlist* playlists, Playlist* playlist, int currentAmount) {
 }
 
 
-void deleteSong() {
+void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
+    for (int i = 0; i < playlist->songsNum; i++) {
+        printf("%d. Title: %s \n", i+1, playlist->songs[i]->title);
+        printf("   Artist: %s\n", playlist->songs[i]->artist);
+        printf("   Released: %d\n", playlist->songs[i]->year);
+        printf("   Streams: %d\n", playlist->songs[i]->streams);
+    }
+    int input;
+    printf("choose a song to delete or 0 to quit:\n");
+    scanf("%d", &input);
 
+    free(playlist->songs[input-1]->lyrics);
+    free(playlist->songs[input-1]);
+    playlist->songsNum--;
+
+    for (int i = input-1; i < playlist->songsNum; i++) {
+        playlist->songs[i] = playlist->songs[i+1];
+    }
+
+    (*currentAmount)--;
     printf("Song deleted successfully.\n");
+    displayPlaylistMenu(playlists, playlist, currentAmount);
 }
 
 void playSong() {
@@ -293,9 +316,33 @@ void freePlaylist() {
 
 }
 
-void sortPlaylist() {
-    printf("sorted\n");
-}
+/*void sortPlaylist() {
+    int selection;
+    printf("choose:\n");
+    printf("1. sort by year\n");
+    printf("2. sort by streams - ascending order\n");
+    printf("3. sort by streams - descending order\n");
+    printf("4. sort alphabetically\n");
+    scanf("%d", &selection);
+    if (selection == 4 || selection < 1 || selection > 4) {
+        sortAlphabetically();
+        return;
+    }
+    switch (selection) {
+        case 1: {
+            sortByYear();
+            return;
+        }
+        case 2: {
+            sortAscenStreams();
+            return;
+        }
+        case 3: {
+            sortDescenStreams();
+        }
+
+    }
+}*/
 
 void printPlaylistsMenu() {
     printf("Please Choose:\n");
@@ -329,6 +376,10 @@ char* readInput() {
             }
         }
         scanf ("%c", &ch);
+    }
+    if (input[index - 1] == ' ') {
+        input[index - 1] = '\0';
+        return input;
     }
     input[index] = '\0';
     return input;
