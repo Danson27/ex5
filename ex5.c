@@ -34,7 +34,7 @@ typedef struct Playlist {
 
 
 
-void watchPlaylists(Playlist **playlists, int currentAmount);
+void watchPlaylists(Playlist *playlists, int *currentAmount);
 void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount);
 void removePlaylist(Playlist **playlists, int *currentAmount);
 void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAmount);
@@ -51,9 +51,6 @@ void freeSong();
 // helper functions
 char* readInput();
 void clearBuffer();
-
-
-
 
 
 
@@ -78,7 +75,7 @@ int main() {
        switch (input) {
                // case 1 watch playlists: see all playlists
                case 1: {
-                   watchPlaylists(playlists, playlistAmount);
+                   watchPlaylists(*playlists, &playlistAmount);
                    break;
                }
                // case 2 add playlist
@@ -123,7 +120,7 @@ int main() {
 }
 
 
-void watchPlaylists(Playlist **playlists, int currentAmount) {
+void watchPlaylists(Playlist *playlists, int *currentAmount) {
    if (currentAmount == 0) {
        printf("Choose a playlist:\n");
        printf("\t1. Back to main menu\n");
@@ -139,35 +136,35 @@ void watchPlaylists(Playlist **playlists, int currentAmount) {
        }
    }
    printf("Choose a playlist: \n");
-   for (int i = 0; i < currentAmount; i++) {
-       printf("\t%d. %s\n", i+1, playlists[i]->name);
+   for (int i = 0; i < *currentAmount; i++) {
+       printf("\t%d. %s\n", i+1, playlists[i].name);
    }
-   printf("\t%d. Back to main menu\n", currentAmount+1);
+   printf("\t%d. Back to main menu\n", *currentAmount+1);
 
 
    int selection;
    scanf("%d", &selection);
    clearBuffer();
-   while (selection < 1 || selection > currentAmount + 1) {
+   while (selection < 1 || selection > *currentAmount + 1) {
        printf("Invalid option\n");
 
 
        printf("Choose a playlist: \n");
-       for (int i = 0; i < currentAmount; i++) {
-           printf("\t%d. %s\n", i + 1, playlists[i]->name);
+       for (int i = 0; i < *currentAmount; i++) {
+           printf("\t%d. %s\n", i + 1, playlists[i].name);
        }
-       printf("\t%d. Back to main menu\n", currentAmount + 1);
+       printf("\t%d. Back to main menu\n", *currentAmount + 1);
        scanf("%d", &selection);
        clearBuffer();
    }
-   if (selection == currentAmount+1) {
+   if (selection == *currentAmount+1) {
        return;
    }
 
 
-   if (selection >= 1 && selection <= currentAmount) {
-       printf("playlist %s:\n", playlists[selection - 1]->name);
-       displayPlaylistMenu(*playlists, playlists[selection - 1], &currentAmount);
+   if (selection >= 1 && selection <= *currentAmount) {
+       printf("playlist %s:\n", playlists[selection - 1].name);
+       displayPlaylistMenu(playlists, &playlists[selection - 1], currentAmount);
    }
 }
 
@@ -326,7 +323,7 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAm
            return;
        }
        case 6: {
-           watchPlaylists(&playlists, *currentAmount);
+           watchPlaylists(playlists, currentAmount);
            break;
        }
        default: {
