@@ -432,7 +432,7 @@ char* readInput() {
     while (scanf("%c", &ch) && (ch == '\n' || ch == '\r')) {}
 
     int index = 0;
-    while (ch != '\n' || ch != '\r') {
+    while (ch != '\n' && ch != '\r') {
         input[index] = ch;
         index++;
         if (index >= size) {
