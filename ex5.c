@@ -152,7 +152,6 @@ void watchPlaylists(Playlist ** playlists, int currentAmount) {
 
     *playlists = temp;
 
-
     Playlist *newPlaylist = malloc(sizeof(Playlist));
     if (newPlaylist == NULL) {
         printf("Memory reallocation failed\n");
@@ -225,11 +224,13 @@ void removePlaylists(Playlist ** playlists, int *currentAmount) {
         for (int i = selection-1; i < *currentAmount; i++) {
             playlists[i] = playlists[i+1];
         }
-        *playlists = realloc(playlists, (*currentAmount)*sizeof(Playlist*));
-        if (playlists == NULL) {
+        Playlist** temp = realloc(*playlists, (*currentAmount) * sizeof(Playlist*));
+        if (temp == NULL) {
             printf("Memory reallocation failed\n");
             exit(1);
         }
+        *playlists = temp;
+
         printf("Playlist deleted.\n");
     }
     else {
@@ -468,18 +469,24 @@ void clearBuffer() {
 }
 
 void freeAll(Playlist** playlists, int playlistsNum) {
+    if (playlists == NULL) {
+        return;
+    }
+    
     for (int i = 0; i < playlistsNum; i++) {
         Playlist* playlist = playlists[i];
-
-        for (int j = 0; j < playlist->songsNum; j++) {
-            Song* song = playlist->songs[j];
-            free(song->title);
-            free(song->artist);
-            free(song->lyrics);
-            free(song);
+        if (playlist != NULL) {
+            for (int j = 0; j < playlist->songsNum; j++) {
+                Song* song = playlist->songs[j];
+                free(song->title);
+                free(song->artist);
+                free(song->lyrics);
+                free(song);
+            }
+            free(playlist->songs);
+            free(playlist->name);
+            free(playlist);
         }
-        free(playlist->name);
-        free(playlist);
     }
     free(playlists);
 }
