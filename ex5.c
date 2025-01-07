@@ -135,6 +135,7 @@ void watchPlaylists(Playlist ** playlists, int currentAmount) {
     clearBuffer();
     while (selection < 1 || selection > currentAmount + 1) {
         printf("Invalid option\n");
+
         printf("Choose a playlist: \n");
         for (int i = 0; i < currentAmount; i++) {
             printf("\t%d. %s\n", i + 1, playlists[i]->name);
@@ -313,7 +314,7 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAm
             return;
         }
         case 6: {
-            watchPlaylists(&playlists, *currentAmount);
+            watchPlaylists(playlists, currentAmount);
             return;
         }
         default: {
