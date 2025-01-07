@@ -257,8 +257,8 @@ void removePlaylist(Playlist ** playlists, int *currentAmount) {
 
        (*currentAmount)--;
        if (*currentAmount > 0) {
-           *playlists = realloc(*playlists, (*currentAmount) * sizeof(Playlist *));
-           if (*playlists == NULL) {
+           playlists = (Playlist**)realloc(playlists, (*currentAmount) * sizeof(Playlist *));
+           if (playlists == NULL) {
                printf("Memory reallocation failed.\n");
                exit(1);
            }
