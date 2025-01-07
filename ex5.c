@@ -291,15 +291,22 @@ void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
     printf("choose a song to delete or 0 to quit:\n");
     scanf("%d", &input);
 
+
+    free(playlist->songs[input-1]->title);
+    free(playlist->songs[input-1]->artist);
     free(playlist->songs[input-1]->lyrics);
     free(playlist->songs[input-1]);
-    playlist->songsNum--;
+    
 
     for (int i = input-1; i < playlist->songsNum; i++) {
         playlist->songs[i] = playlist->songs[i+1];
     }
-
-    (*currentAmount)--;
+    playlist->songsNum--;
+    playlist->songs = realloc (playlist->songs, playlist->songsNum * sizeof(Song*));
+    if (playlist->songs == NULL) {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
     printf("Song deleted successfully.\n");
     displayPlaylistMenu(playlists, playlist, currentAmount);
 }
