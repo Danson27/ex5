@@ -196,7 +196,8 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAm
         }
         case 5: {
             //playPlaylist();
-            for (int i = 0; i < *currentAmount+1; i++) {
+            for (int i = 0; i < playlist->songsNum; i++) {
+                playlist->songs[i]->streams++;
                 printf("Now playing %s:\n", playlist->songs[i]->title);
                 printf("$ %s $\n ", playlist->songs[i]->lyrics);
             }
@@ -256,6 +257,7 @@ void addSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
     printf("Year of release: \n");
     scanf("%d", &yearOfRelease);
     newSong->year = yearOfRelease;
+    clearBuffer();
 
     printf("Lyrics: \n");
     newSong->lyrics = readInput();
