@@ -364,7 +364,7 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAm
            return;
        }
        case 6: {
-           watchPlaylists(playlists, currentAmount);
+           watchPlaylists(&playlists, *currentAmount);
            return;
        }
        default: {
