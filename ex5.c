@@ -29,13 +29,12 @@ typedef struct Playlist {
 
 void watchPlaylists(Playlist **playlists, int currentAmount);
 void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount);
-void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int currentAmount);
+void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAmount);
 void showPlaylist(Playlist* playlists, Playlist* playlist, int currentAmount);
 void printPlaylistsMenu();
 void sortPlaylist();
 void freePlaylist();
-
-void addSong(Playlist* playlists, Playlist* playlist, int currentAmount);
+void addSong(Playlist* playlists, Playlist* playlist, int *currentAmount);
 void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount);
 void playSong();
 void freeSong();
@@ -128,7 +127,7 @@ void watchPlaylists(Playlist ** playlists, int currentAmount) {
 
     if (selection >= 1 && selection <= currentAmount) {
         printf("playlist %s:\n", playlists[selection - 1]->name);
-        displayPlaylistMenu(*playlists, playlists[selection - 1], currentAmount);
+        displayPlaylistMenu(*playlists, playlists[selection - 1], &currentAmount);
     }
     else {
     printf("Invalid selection\n");
@@ -168,7 +167,7 @@ void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount) {
 
 }
 
-void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int currentAmount) {
+void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAmount) {
     int input;
     printf("\t1. Show Playlist\n"
                  "\t2. Add Song\n"
@@ -180,7 +179,7 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int currentAmo
     clearBuffer();
     switch (input) {
         case 1: {
-            showPlaylist(playlists, playlist, currentAmount);
+            showPlaylist(playlists, playlist, *currentAmount);
             return;
         }
         case 2: {
@@ -188,7 +187,7 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int currentAmo
             return;
         }
         case 3: {
-            deleteSong(playlists, playlist, &currentAmount);
+            deleteSong(playlists, playlist, currentAmount);
             break;
         }
         case 4: {
@@ -197,7 +196,7 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int currentAmo
         }
         case 5: {
             //playPlaylist();
-            for (int i = 0; i < currentAmount+1; i++) {
+            for (int i = 0; i < *currentAmount+1; i++) {
                 printf("Now playing %s:\n", playlist->songs[i]->title);
                 printf("$ %s $\n ", playlist->songs[i]->lyrics);
             }
@@ -205,7 +204,7 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int currentAmo
             return;
         }
         case 6: {
-            watchPlaylists(&playlists, currentAmount);
+            watchPlaylists(&playlists, *currentAmount);
             return;
         }
         default: {
@@ -235,10 +234,10 @@ void showPlaylist(Playlist* playlists, Playlist* playlist, int currentAmount) {
             scanf("%d", &input);
         }
     }
-    displayPlaylistMenu(playlists, playlist, currentAmount);
+    displayPlaylistMenu(playlists, playlist, &currentAmount);
 }
 
-void addSong(Playlist* playlists, Playlist* playlist, int currentAmount) {
+void addSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
     int yearOfRelease;
     Song* newSong = (Song*)malloc(sizeof(Song));
     if (newSong == NULL) {
@@ -296,7 +295,7 @@ void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
     free(playlist->songs[input-1]->artist);
     free(playlist->songs[input-1]->lyrics);
     free(playlist->songs[input-1]);
-    
+
 
     for (int i = input-1; i < playlist->songsNum; i++) {
         playlist->songs[i] = playlist->songs[i+1];
