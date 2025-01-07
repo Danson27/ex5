@@ -29,7 +29,7 @@ typedef struct Playlist {
 
 void watchPlaylists(Playlist **playlists, int currentAmount);
 void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount);
-void removePlaylist(Playlist ** playlists, int *currentAmount);
+void removePlaylist(Playlist **playlists, int *currentAmount);
 void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAmount);
 void showPlaylist(Playlist* playlists, Playlist* playlist, int currentAmount);
 void printPlaylistsMenu();
@@ -192,28 +192,32 @@ void watchPlaylists(Playlist ** playlists, int currentAmount) {
 
 }
 
+
+
+
 void removePlaylist(Playlist ** playlists, int *currentAmount) {
 
-    if (*currentAmount == 0) {
-        printf("Choose a playlist:\n");
-        printf("\t1. Back to main menu\n");
-        int choice;
-        scanf("%d", &choice);
-        {
-            while (choice != 1) {
-                printf("Invalid input. Please try again.\n");
-                printf("Choose a playlist:\n");
-                printf("\t1. Back to main menu\n");
-                scanf("%d", &choice);
-            }
-            return;
-        }
-    }
+
+   if (*currentAmount == 0) {
+       printf("Choose a playlist:\n");
+       printf("\t1. Back to main menu\n");
+       int choice;
+       scanf("%d", &choice);
+       {
+           while (choice != 1) {
+               printf("Invalid input. Please try again.\n");
+               printf("Choose a playlist:\n");
+               printf("\t1. Back to main menu\n");
+               scanf("%d", &choice);
+           }
+           return;
+       }
+   }
 
     printf("Choose a playlist: \n");
 
     for (int i = 0; i < *currentAmount; i++) {
-        printf("\t%d. %s\n", i+1, (playlists)[i]->name);
+        printf("\t%d. %s\n", i+1, playlists[i]->name);
     }
     printf("\t%d. Back to main menu\n", *currentAmount+1);
 
@@ -221,50 +225,58 @@ void removePlaylist(Playlist ** playlists, int *currentAmount) {
     scanf("%d", &selection);
     clearBuffer();
 
+    while (selection < 1 || selection > *currentAmount + 1) {
+        printf("Invalid option\n");
+        printf("Choose a playlist: \n");
+        for (int i = 0; i < *currentAmount; i++) {
+            printf("\t%d. %s\n", i + 1, playlists[i]->name);
+        }
+        printf("\t%d. Back to main menu\n", *currentAmount + 1);
+        scanf("%d", &selection);
+        clearBuffer();
+    }
     if (selection == *currentAmount+1) {
         return;
     }
-    if (selection < 0 || selection >= *currentAmount) {
-        printf("Invalid playlist index.\n");
-        return;
-    }
-    if (selection >= 1 && selection <= *currentAmount) {
-        Playlist toDelete = (*playlists)[selection-1];
-            for (int i = 0; i < playlists[selection-1]->songsNum; i++) {
-                free(toDelete.songs[i]->title);
-                free(toDelete.songs[i]->artist);
-                free(toDelete.songs[i]->lyrics);
-                free(toDelete.songs[i]);
-            }
-        free(toDelete.name);
-        free(toDelete.songs);
-        free((playlists)[selection-1]);
 
-        for (int i = selection-1; i < (*currentAmount)-1; i++) {
-            (*playlists)[i] = (*playlists)[i+1];
-        }
+   if (selection >= 1 && selection <= *currentAmount) {
+       Playlist *toDelete = (playlists)[selection-1];
+           for (int i = 0; i < toDelete->songsNum; i++) {
+               free(toDelete->songs[i]->title);
+               free(toDelete->songs[i]->artist);
+               free(toDelete->songs[i]->lyrics);
+               free(toDelete->songs[i]);
+           }
+               free(toDelete->name);
+               free(toDelete->songs);
+               free(toDelete);
 
-        (*currentAmount)--;
-        if (*currentAmount > 0) {
-            Playlist *temp = realloc(*playlists, (*currentAmount) * sizeof(Playlist*));
-            if (temp == NULL && *currentAmount > 0) {
-                printf("Memory reallocation failed after removing playlist.\n");
-                exit(1);
-            }
-            *playlists = temp;
-        } else {
-            free(*playlists);
-            *playlists = NULL;
-        }
+       for (int i = selection-1; i < (*currentAmount); i++) {
+           (playlists)[i] = (playlists)[i+1];
+       }
 
-        printf("Playlist deleted.\n");
-    }
-    else {
-        printf("Invalid option\n");
-    }
+       (*currentAmount)--;
+       if (*currentAmount > 0) {
+           Playlist *temp = realloc(*playlists, (*currentAmount) * sizeof(Playlist*));
+           if (temp == NULL && *currentAmount > 0) {
+               printf("Memory reallocation failed after removing playlist.\n");
+               exit(1);
+           }
+           *playlists = temp;
+       } else {
+           free(*playlists);
+           *playlists = NULL;
+       }
+
+
+       printf("Playlist deleted.\n");
+   }
+   else {
+       printf("Invalid option\n");
+   }
+
 
 }
-
 
 
 void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAmount) {
