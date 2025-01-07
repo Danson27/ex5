@@ -29,7 +29,7 @@ typedef struct Playlist {
 
 void watchPlaylists(Playlist **playlists, int currentAmount);
 void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount);
-void removePlaylists(Playlist ** playlists, int *currentAmount);
+void removePlaylist(Playlist ** playlists, int *currentAmount);
 void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAmount);
 void showPlaylist(Playlist* playlists, Playlist* playlist, int currentAmount);
 void printPlaylistsMenu();
@@ -44,7 +44,6 @@ void freeSong();
 char* readInput();
 void clearBuffer();
 
-void freeAll(Playlist** playlists, int playlistsNum);
 
 
 
@@ -74,11 +73,22 @@ int main() {
                     break;
                 }
                 case 3: {
-                    removePlaylists(playlists, &playlistAmount);
+                    removePlaylist(playlists, &playlistAmount);
                     break;
                 }
                 case 4: {
-                    freeAll(playlists, playlistAmount);
+                    for (int i = 0; i < playlistAmount; i++) {
+                        free(playlists[i]->name);
+                        for (int j = 0; j < playlists[i]->songsNum; j++) {
+                            free(playlists[i]->songs[j]->title);
+                            free(playlists[i]->songs[j]->artist);
+                            free(playlists[i]->songs[j]->lyrics);
+                            free(playlists[i]->songs[j]);
+                        }
+                            free(playlists[i]->songs);
+                            free(playlists[i]);
+                        }
+                    free(playlists);
                     printf("Goodbye!\n");
                     return 1;
                 }
@@ -175,7 +185,8 @@ void watchPlaylists(Playlist ** playlists, int currentAmount) {
 
 }
 
-void removePlaylists(Playlist ** playlists, int *currentAmount) {
+void removePlaylist(Playlist ** playlists, int *currentAmount) {
+
     if (*currentAmount == 0) {
         printf("Choose a playlist:\n");
         printf("\t1. Back to main menu\n");
@@ -195,7 +206,7 @@ void removePlaylists(Playlist ** playlists, int *currentAmount) {
     printf("Choose a playlist: \n");
 
     for (int i = 0; i < *currentAmount; i++) {
-        printf("\t%d. %s\n", i+1, playlists[i]->name);
+        printf("\t%d. %s\n", i+1, (playlists)[i]->name);
     }
     printf("\t%d. Back to main menu\n", *currentAmount+1);
 
@@ -208,30 +219,32 @@ void removePlaylists(Playlist ** playlists, int *currentAmount) {
     }
 
     if (selection >= 1 && selection <= *currentAmount) {
-        for (int i = 0; i < playlists[selection-1]->songsNum; i++) {
-            Song* song = playlists[selection-1]->songs[i];
-            free(song->title);
-            free(song->artist);
-            free(song->lyrics);
-            free(song);
+        if (playlists[selection-1]->songs) {
+            for (int i = 0; i < playlists[selection-1]->songsNum; i++) {
+                Song* song = (playlists)[selection-1]->songs[i];
+                free(song->title);
+                free(song->artist);
+                free(song->lyrics);
+                free(song);
+            }
         }
 
-        free(playlists[selection-1]->name);
-        free(playlists[selection-1]->songs);
+        free((playlists)[selection-1]->name);
+        free((playlists)[selection-1]->songs);
         free(playlists[selection-1]);
 
-
-
         for (int i = selection-1; i < (*currentAmount)-1; i++) {
-            (*playlists)[i] = (*playlists)[i+1];
+            (playlists)[i] = (playlists)[i+1];
         }
-        Playlist* temp = realloc(*playlists, ((*currentAmount)-1) * sizeof(Playlist*));
-        if (temp == NULL) {
+
+        (*currentAmount)--;
+
+        *playlists = realloc(*playlists, (*currentAmount)*sizeof(Playlist*));
+        if (*playlists == NULL) {
             printf("Memory reallocation failed\n");
             exit(1);
         }
-        *playlists = temp;
-        (*currentAmount)--;
+
         printf("Playlist deleted.\n");
     }
     else {
@@ -469,30 +482,3 @@ void clearBuffer() {
     scanf("%*[^\n]");
     scanf("%*c");
 }
-
-void freeAll(Playlist** playlists, int playlistsNum) {
-    if (playlists == NULL) {
-        return;
-    }
-
-    for (int i = 0; i < playlistsNum; i++) {
-        Playlist* playlist = playlists[i];
-        if (playlist != NULL) {
-            for (int j = 0; j < playlist->songsNum; j++) {
-                Song* song = playlist->songs[j];
-                free(song->title);
-                free(song->artist);
-                free(song->lyrics);
-                free(song);
-            }
-            free(playlist->songs);
-            free(playlist->name);
-            free(playlist);
-        }
-    }
-    free(playlists);
-}
-
-
-
-
