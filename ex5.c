@@ -217,25 +217,27 @@ void removePlaylists(Playlist ** playlists, int *currentAmount) {
         }
 
         free(playlists[selection-1]->name);
+        free(playlists[selection-1]->songs);
         free(playlists[selection-1]);
 
 
-        (*currentAmount)--;
-        for (int i = selection-1; i < *currentAmount; i++) {
-            playlists[i] = playlists[i+1];
+
+        for (int i = selection-1; i < (*currentAmount)-1; i++) {
+            (*playlists)[i] = (*playlists)[i+1];
         }
-        Playlist** temp = realloc(*playlists, (*currentAmount) * sizeof(Playlist*));
+        Playlist* temp = realloc(*playlists, ((*currentAmount)-1) * sizeof(Playlist*));
         if (temp == NULL) {
             printf("Memory reallocation failed\n");
             exit(1);
         }
         *playlists = temp;
-
+        (*currentAmount)--;
         printf("Playlist deleted.\n");
     }
     else {
         printf("Invalid option\n");
     }
+
 }
 
 
@@ -472,7 +474,7 @@ void freeAll(Playlist** playlists, int playlistsNum) {
     if (playlists == NULL) {
         return;
     }
-    
+
     for (int i = 0; i < playlistsNum; i++) {
         Playlist* playlist = playlists[i];
         if (playlist != NULL) {
