@@ -37,7 +37,7 @@ typedef struct Playlist {
 void watchPlaylists(Playlist **playlists, int currentAmount);
 void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount);
 void removePlaylist(Playlist **playlists, int *currentAmount);
-void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAmount);
+void displayPlaylistMenu(Playlist** playlists, Playlist* playlist, int *currentAmount);
 void showPlaylist(Playlist* playlists, Playlist* playlist, int currentAmount);
 void printPlaylistsMenu();
 void sortPlaylist(Playlist *playlist);
@@ -123,7 +123,7 @@ int main() {
 }
 
 
-void watchPlaylists(Playlist ** playlists, int currentAmount) {
+void watchPlaylists(Playlist **playlists, int currentAmount) {
    if (currentAmount == 0) {
        printf("Choose a playlist:\n");
        printf("\t1. Back to main menu\n");
@@ -141,8 +141,6 @@ void watchPlaylists(Playlist ** playlists, int currentAmount) {
 
 
    printf("Choose a playlist: \n");
-
-
    for (int i = 0; i < currentAmount; i++) {
        printf("\t%d. %s\n", i+1, playlists[i]->name);
    }
@@ -325,7 +323,7 @@ void removePlaylist(Playlist ** playlists, int *currentAmount) {
 
 
 
-void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAmount) {
+void displayPlaylistMenu(Playlist** playlists, Playlist* playlist, int *currentAmount) {
    int input;
    printf("\t1. Show Playlist\n"
                 "\t2. Add Song\n"
@@ -337,15 +335,15 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAm
    clearBuffer();
    switch (input) {
        case 1: {
-           showPlaylist(playlists, playlist, *currentAmount);
+           showPlaylist(*playlists, playlist, *currentAmount);
            return;
        }
        case 2: {
-           addSong(playlists, playlist, currentAmount);
+           addSong(*playlists, playlist, currentAmount);
            return;
        }
        case 3: {
-           deleteSong(playlists, playlist, currentAmount);
+           deleteSong(*playlists, playlist, currentAmount);
            break;
        }
        case 4: {
@@ -364,7 +362,7 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAm
            return;
        }
        case 6: {
-           watchPlaylists(&playlists, *currentAmount);
+           watchPlaylists(playlists, *currentAmount);
            return;
        }
        default: {
