@@ -285,7 +285,7 @@ void showPlaylist(Playlist* playlists, Playlist* playlist, int currentAmount) {
         printf("   Streams: %d\n", playlist->songs[i]->streams);
     }
     int input;
-    printf("choose a song to play or 0 to quit:\n");
+    printf("choose a song to play, or 0 to quit:\n");
     scanf("%d", &input);
     if (playlist->songsNum != 0) {
         while (input != 0){
