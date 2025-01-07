@@ -44,7 +44,7 @@ void freeSong();
 char* readInput();
 void clearBuffer();
 
-freeAll(Playlist** playlists, int playlistsNum);
+void freeAll(Playlist** playlists, int playlistsNum);
 
 
 
@@ -458,8 +458,8 @@ void clearBuffer() {
     scanf("%*c");
 }
 
-freeAll(Playlist** playlists, int playlistsNum) {
-    for (int i = 0; i < playlistNum; i++) {
+void freeAll(Playlist** playlists, int playlistsNum) {
+    for (int i = 0; i < playlistsNum; i++) {
         Playlist* playlist = playlists[i];
 
         for (int j = 0; j < playlist->songsNum; j++) {
