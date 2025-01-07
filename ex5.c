@@ -251,7 +251,7 @@ void removePlaylist(Playlist ** playlists, int *currentAmount) {
                free(toDelete->songs);
                free(toDelete);
 
-       for (int i = selection-1; i < (*currentAmount); i++) {
+       for (int i = selection-1; i < (*currentAmount-1); i++) {
            (playlists)[i] = (playlists)[i+1];
        }
 
