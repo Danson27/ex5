@@ -209,26 +209,35 @@ void removePlaylists(Playlist ** playlists, int *currentAmount) {
     }
 
     if (selection >= 1 && selection <= *currentAmount) {
+        for (int i = 0; i < playlists[selection-1]->songsNum; i++) {
+            Song* song = playlists[selection-1]->songs[i];
+            free(song->title);
+            free(song->artist);
+            free(song->lyrics);
+            free(song);
+        }
+
         free(playlists[selection-1]->name);
-        free(playlists[selection-1]->songs);
         free(playlists[selection-1]);
 
+
+        (*currentAmount)--;
         for (int i = selection-1; i < *currentAmount; i++) {
             playlists[i] = playlists[i+1];
         }
-        (*currentAmount)--;
         *playlists = realloc(playlists, (*currentAmount)*sizeof(Playlist*));
         if (playlists == NULL) {
             printf("Memory reallocation failed\n");
             exit(1);
         }
-
         printf("Playlist deleted.\n");
     }
     else {
-        printf("Invalid selection\n");
+        printf("Invalid option\n");
     }
 }
+
+
 
 void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAmount) {
     int input;
@@ -469,7 +478,6 @@ void freeAll(Playlist** playlists, int playlistsNum) {
             free(song->lyrics);
             free(song);
         }
-        free(playlist->songs);
         free(playlist->name);
         free(playlist);
     }
