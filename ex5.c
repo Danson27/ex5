@@ -292,7 +292,7 @@ void showPlaylist(Playlist* playlists, Playlist* playlist, int currentAmount) {
             printf("Now playing %s:\n", playlist->songs[input-1]->title);
             printf("$ %s $\n", playlist->songs[input-1]->lyrics);
             playlist->songs[input-1]->streams++;
-            printf("choose a song to play or 0 to quit:\n");
+            printf("choose a song to play, or 0 to quit:\n");
             scanf("%d", &input);
         }
     }
@@ -446,7 +446,7 @@ char* readInput() {
         }
         scanf ("%c", &ch);
     }
-    
+
     input[index] = '\0';
     return input;
 }
