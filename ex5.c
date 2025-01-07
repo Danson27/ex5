@@ -119,8 +119,16 @@ void watchPlaylists(Playlist ** playlists, int currentAmount) {
     int selection;
     scanf("%d", &selection);
     clearBuffer();
-
-
+    while (selection < 1 || selection > currentAmount + 1) {
+        printf("Invalid option\n");
+        printf("Choose a playlist: \n");
+        for (int i = 0; i < currentAmount; i++) {
+            printf("\t%d. %s\n", i + 1, playlists[i]->name);
+        }
+        printf("\t%d. Back to main menu\n", currentAmount + 1);
+        scanf("%d", &selection);
+        clearBuffer();
+    }
     if (selection == currentAmount+1) {
         return;
     }
@@ -129,11 +137,10 @@ void watchPlaylists(Playlist ** playlists, int currentAmount) {
         printf("playlist %s:\n", playlists[selection - 1]->name);
         displayPlaylistMenu(*playlists, playlists[selection - 1], &currentAmount);
     }
-    else {
-    printf("Invalid selection\n");
-    }
 }
-void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount) {
+
+
+   void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount) {
 
     Playlist **temp = realloc(*playlists, (*currentPlaylistAmount+1) * sizeof(Playlist*));
     if (temp == NULL) {
@@ -214,7 +221,7 @@ void removePlaylists(Playlist ** playlists, int *currentAmount) {
             exit(1);
         }
 
-        printf("Playlist deleted\n");
+        printf("Playlist deleted.\n");
     }
     else {
         printf("Invalid selection\n");
@@ -425,7 +432,7 @@ char* readInput() {
     while (scanf("%c", &ch) && (ch == '\n' || ch == '\r')) {}
 
     int index = 0;
-    while (ch != '\n') {
+    while (ch != '\n' || ch != '\r') {
         input[index] = ch;
         index++;
         if (index >= size) {
@@ -439,10 +446,7 @@ char* readInput() {
         }
         scanf ("%c", &ch);
     }
-    if (input[index - 1] == ' ') {
-        input[index - 1] = '\0';
-        return input;
-    }
+    
     input[index] = '\0';
     return input;
 }
