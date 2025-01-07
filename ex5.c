@@ -78,19 +78,21 @@ int main() {
                 }
                 case 4: {
                     for (int i = 0; i < playlistAmount; i++) {
-                        free(playlists[i]->name);
-                        for (int j = 0; j < playlists[i]->songsNum; j++) {
-                            free(playlists[i]->songs[j]->title);
-                            free(playlists[i]->songs[j]->artist);
-                            free(playlists[i]->songs[j]->lyrics);
-                            free(playlists[i]->songs[j]);
-                        }
+                        if (playlists[i]->songs != NULL) {
+                            for (int j = 0; j < playlists[i]->songsNum; j++) {
+                                free(playlists[i]->songs[j]->title);
+                                free(playlists[i]->songs[j]->artist);
+                                free(playlists[i]->songs[j]->lyrics);
+                                free(playlists[i]->songs[j]);
+                            }
                             free(playlists[i]->songs);
-                            free(playlists[i]);
+                        }
+                        free(playlists[i]->name);
+                        free(playlists[i]);
                         }
                     free(playlists);
                     printf("Goodbye!\n");
-                    return 1;
+                    return 0;
                 }
 
                 // Handle invalid menu inputs
@@ -157,6 +159,7 @@ void watchPlaylists(Playlist ** playlists, int currentAmount) {
     Playlist **temp = realloc(*playlists, (*currentPlaylistAmount+1) * sizeof(Playlist*));
     if (temp == NULL) {
         printf("Memory reallocation failed\n");
+        free(*playlists);
         exit(1);
     }
 
@@ -165,13 +168,17 @@ void watchPlaylists(Playlist ** playlists, int currentAmount) {
     Playlist *newPlaylist = malloc(sizeof(Playlist));
     if (newPlaylist == NULL) {
         printf("Memory reallocation failed\n");
+        free(*playlists);
         exit(1);
     }
     printf("Enter playlist's name: \n");
     char* name = readInput();
+
     newPlaylist->name = malloc(strlen(name)+1);
     if (newPlaylist->name == NULL) {
         free(name);
+        free(newPlaylist);
+        free(*playlists);
         exit(1);
     }
     strcpy(newPlaylist->name, name);
@@ -219,19 +226,18 @@ void removePlaylist(Playlist ** playlists, int *currentAmount) {
     }
 
     if (selection >= 1 && selection <= *currentAmount) {
-        if (playlists[selection-1]->songs) {
+            Playlist *toDelete = playlists[selection-1];
             for (int i = 0; i < playlists[selection-1]->songsNum; i++) {
-                Song* song = (playlists)[selection-1]->songs[i];
-                free(song->title);
-                free(song->artist);
-                free(song->lyrics);
-                free(song);
+                free(toDelete->songs[i]->title);
+                free(toDelete->songs[i]->artist);
+                free(toDelete->songs[i]->lyrics);
+                free(toDelete->songs[i]);
             }
-        }
 
-        free((playlists)[selection-1]->name);
-        free((playlists)[selection-1]->songs);
-        free(playlists[selection-1]);
+
+        free(toDelete->name);
+        free(toDelete->songs);
+        free(toDelete);
 
         for (int i = selection-1; i < (*currentAmount)-1; i++) {
             (playlists)[i] = (playlists)[i+1];
@@ -239,11 +245,12 @@ void removePlaylist(Playlist ** playlists, int *currentAmount) {
 
         (*currentAmount)--;
 
-        *playlists = realloc(*playlists, (*currentAmount)*sizeof(Playlist*));
-        if (*playlists == NULL) {
-            printf("Memory reallocation failed\n");
+        Playlist **temp = realloc(playlists, (*currentAmount) * sizeof(Playlist*));
+        if (temp == NULL && *currentAmount > 0) {
+            printf("Memory reallocation failed after removing playlist.\n");
             exit(1);
         }
+        playlists = temp;
 
         printf("Playlist deleted.\n");
     }
@@ -464,12 +471,13 @@ char* readInput() {
         index++;
         if (index >= size) {
             size *= 2;
-            input = realloc(input, size * sizeof(char));
-            if (input == NULL) {
+            char* temp = realloc(input, size * sizeof(char));
+            if (temp == NULL) {
                 printf("Memory allocation failed\n");
                 free (input);
                 exit(1);
             }
+            input = temp;
         }
         scanf ("%c", &ch);
     }
