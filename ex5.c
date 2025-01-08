@@ -35,7 +35,7 @@ typedef struct Playlist {
 
 
 void watchPlaylists(Playlist **playlists, int *playlistAmount);
-void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount);
+void addPlaylist(Playlist **playlists, int *currentPlaylistAmount);
 void removePlaylist(Playlist ***playlists, int *currentAmount);
 void displayPlaylistMenu(Playlist** playlists, Playlist* playlist, int *playlistAmount);
 void showPlaylist(Playlist** playlists, Playlist* playlist, int currentAmount);
@@ -76,7 +76,7 @@ int main() {
                }
                // case 2 add playlist
                case 2: {
-                   addPlaylist(&playlists, &playlistAmount);
+                   addPlaylist(playlists, &playlistAmount);
                    break;
                }
                case 3: {
@@ -158,43 +158,31 @@ void watchPlaylists(Playlist **playlists, int *playlistAmount) {
        displayPlaylistMenu(playlists, playlists[selection - 1], playlistAmount);
    }
 }
+void addPlaylist(Playlist** playlists, int *currentPlaylistAmount) {
+    *playlists = (Playlist*)realloc(playlists, sizeof(Playlist*)*(*currentPlaylistAmount+1));
+    if (*playlists == NULL) {
+        printf("Error allocating memory for playlists\n");
+        exit(1);
+    }
+    int index = *(currentPlaylistAmount);
+    Playlist* newPlaylist = malloc(sizeof(Playlist));
+    if (newPlaylist == NULL) {
+        printf("Error allocating memory for playlists\n");
+        exit(1);
+    }
 
-void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount) {
-   Playlist **temp = realloc(*playlists, (*currentPlaylistAmount+1) * sizeof(Playlist*));
-   if (temp == NULL) {
-       printf("Memory reallocation failed\n");
-       exit(1);
-   }
-   *playlists = temp;
+    printf("Enter playlist's name: \n");
+    char* playlistName = readInput();
 
-   Playlist *newPlaylist = malloc(sizeof(Playlist));
-   if (newPlaylist == NULL) {
-       printf("Memory reallocation failed\n");
-       free(*playlists);
-       exit(1);
-   }
-
-    newPlaylist->songs = NULL;
-    newPlaylist->songsNum = 0;
-
-   printf("Enter playlist's name: \n");
-   char* name = readInput();
-    
-   newPlaylist->name = malloc(strlen(name)+1);
-   if (newPlaylist->name == NULL) {
-       free(name);
-       free(newPlaylist);
-       free(*playlists);
-       exit(1);
-   }
-   strcpy(newPlaylist->name, name);
+    (*playlists)[index].name = strdup(playlistName);
+    (*playlists)[index].songs = NULL;
+    (*playlists)[index].songsNum = 0;
 
 
+    playlists[*currentPlaylistAmount] = newPlaylist;
+    (*currentPlaylistAmount)++;
 
-   (*playlists)[*currentPlaylistAmount] = newPlaylist;
-   (*currentPlaylistAmount)++;
 }
-
 void removePlaylist(Playlist *** playlists, int *currentPlaylistAmount) {
 
   if (*currentPlaylistAmount == 0) {
@@ -356,9 +344,7 @@ void addSong(Playlist** playlists, Playlist* playlist, int *currentAmount) {
        exit(1);
    }
 
-
    printf("Enter song's details\n");
-
 
    printf("Title: \n");
    newSong->title = readInput();
@@ -376,7 +362,6 @@ void addSong(Playlist** playlists, Playlist* playlist, int *currentAmount) {
 
    printf("Lyrics: \n");
    newSong->lyrics = readInput();
-
 
    newSong->streams = 0;
 
@@ -398,6 +383,7 @@ void addSong(Playlist** playlists, Playlist* playlist, int *currentAmount) {
 
    displayPlaylistMenu(playlists, playlist, currentAmount);
 }
+
 
 
 
@@ -517,10 +503,8 @@ char* readInput() {
        exit(1);
    }
 
-
    // Skip any leading newline characters
    while (scanf("%c", &ch) && (ch == '\n' || ch == '\r')) {}
-
 
    int index = 0;
    while (ch != '\n' && ch != '\r') {
@@ -542,6 +526,7 @@ char* readInput() {
    input[index] = '\0';
    return input;
 }
+
 
 
 void clearBuffer() {
