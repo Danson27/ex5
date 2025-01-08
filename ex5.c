@@ -177,6 +177,10 @@ void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount) {
        free(*playlists);
        exit(1);
    }
+    newPlaylist->name = NULL;
+    newPlaylist->songs = NULL;
+    newPlaylist->songsNum = 0;
+
    printf("Enter playlist's name: \n");
    char* name = readInput();
 
@@ -189,8 +193,7 @@ void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount) {
        exit(1);
    }
    strcpy(newPlaylist->name, name);
-   newPlaylist->songs = NULL;
-   newPlaylist->songsNum = 0;
+  
 
 
    (*playlists)[*currentPlaylistAmount] = newPlaylist;
