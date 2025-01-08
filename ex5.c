@@ -319,6 +319,15 @@ void displayPlaylistMenu(Playlist** playlists, Playlist* playlist, int *playlist
            return;
        }
        case 6: {
+           //////////////////
+           printf("DEBUG: Current playlist amount = %d\n", *playlistAmount);
+           for (int i = 0; i < *playlistAmount; i++) {
+               printf("DEBUG: playlists[%d] = %p\n", i, (void*)playlists[i]);
+               if (playlists[i] != NULL) {
+                   printf("DEBUG: playlists[%d]->name = %p\n", i, (void*)playlists[i]->name);
+               }
+           }
+           ///////////////////
            watchPlaylists(playlists, playlistAmount);
            break;
        }
