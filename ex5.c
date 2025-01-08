@@ -189,7 +189,6 @@ void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount) {
        exit(1);
    }
    strcpy(newPlaylist->name, name);
-   free(name);
    newPlaylist->songs = NULL;
    newPlaylist->songsNum = 0;
 
