@@ -43,7 +43,7 @@ void printPlaylistsMenu();
 void sortPlaylist(Playlist *playlist);
 void freePlaylist();
 void addSong(Playlist** playlists, Playlist* playlist, int *currentAmount);
-void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount);
+void deleteSong(Playlist* playlist);
 void playSong();
 void freeSong();
 
@@ -105,7 +105,6 @@ int main() {
                    printf("Goodbye!\n");
                    return 0;
                }
-
 
                // Handle invalid menu inputs
                default:
@@ -299,7 +298,7 @@ void displayPlaylistMenu(Playlist** playlists, Playlist* playlist, int *playlist
            return;
        }
        case 3: {
-           deleteSong(*playlists, playlist, playlistAmount);
+           deleteSong(playlist);
            displayPlaylistMenu(playlists, playlist, playlistAmount);
            break;
        }
@@ -319,11 +318,6 @@ void displayPlaylistMenu(Playlist** playlists, Playlist* playlist, int *playlist
            return;
        }
        case 6: {
-           printf("Choose a playlist:\n");
-           for (int i = 0; i < *playlistAmount; i++) {
-               printf("\t%d. %s\n", i+1, playlists[i]->name);
-           }
-           printf("\t%d. Back to main menu\n", *playlistAmount+1);
            watchPlaylists(playlists, playlistAmount);
            break;
        }
@@ -412,7 +406,7 @@ void addSong(Playlist** playlists, Playlist* playlist, int *currentAmount) {
 
 
 
-void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
+void deleteSong(Playlist* playlist) {
    for (int i = 0; i < playlist->songsNum; i++) {
        printf("%d. Title: %s \n", i+1, playlist->songs[i]->title);
        printf("   Artist: %s\n", playlist->songs[i]->artist);
