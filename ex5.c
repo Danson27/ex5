@@ -199,7 +199,7 @@ void watchPlaylists(Playlist **playlists, int *currentAmount) {
 
   if (selection >= 1 && selection <= *currentAmount) {
       printf("playlist %s:\n", playlists[selection - 1]->name);
-      displayPlaylistMenu(*playlists, playlists[selection - 1], *currentAmount);
+      displayPlaylistMenu(*playlists, playlists[selection - 1], currentAmount);
   }
 }
 
