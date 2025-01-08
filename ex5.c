@@ -151,7 +151,7 @@ void watchPlaylists(Playlist **playlists, int *currentAmount) {
 
        printf("Choose a playlist: \n");
        for (int i = 0; i < *currentAmount; i++) {
-           printf("\t%d. %s\n", i + 1, playlists[i]->name);
+           printf("\t%d. %s\n", i + 1, (*playlists[i]).name);
        }
        printf("\t%d. Back to main menu\n", *currentAmount + 1);
        scanf("%d", &selection);
