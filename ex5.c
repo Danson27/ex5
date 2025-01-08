@@ -339,7 +339,7 @@ void displayPlaylistMenu(Playlist*** playlists, Playlist* playlist, int *current
            }
            printf("Choose a playlist: \n");
            for (int i = 0; i < *currentAmount; i++) {
-               printf("\t%d. %s\n", i+1, playlist->name);
+               printf("\t%d. %s\n", i+1, (*playlists[i])->name);
            }
            printf("\t%d. Back to main menu\n", *currentAmount+1);
 
@@ -373,6 +373,7 @@ void displayPlaylistMenu(Playlist*** playlists, Playlist* playlist, int *current
        default: {
            printf("Invalid option\n");
        }
+
    }
 }
 
