@@ -418,7 +418,7 @@ void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
        printf("   Streams: %d\n", playlist->songs[i]->streams);
    }
    int input;
-   printf("choose a song to delete or 0 to quit:\n");
+   printf("choose a song to delete, or 0 to quit:\n");
    scanf("%d", &input);
 
 
