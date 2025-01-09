@@ -194,7 +194,6 @@ void addPlaylist(Playlist ***playlists, int *currentAmount) {
         printf("Error allocating memory for playlist\n");
         exit(1);
     }
-    int insertingIndex = *currentAmount;
     printf("Enter playlist's name:\n");
     char *playlistName = readInput(); // read playlist name
     newPlaylist->name = playlistName;
