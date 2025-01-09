@@ -528,3 +528,5 @@ void clearBuffer() {
   scanf("%*[^\n]");
   scanf("%*c");
 }
+
+//good
