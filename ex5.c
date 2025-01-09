@@ -149,12 +149,8 @@ void addPlaylist(Playlist ***playlists, int *currentAmount) {
     int insertingIndex = *currentAmount;
     printf("Enter playlist's name:\n");
     char *playlistName = readInput(); // read playlist name
-    (*playlists)[insertingIndex] = malloc(sizeof(Playlist));
-    if (!(*playlists)[insertingIndex]) {
-        printf("Error allocating memory for new playlist\n");
-        exit(1);
-    }
-    (*playlists)[insertingIndex] = malloc(sizeof(Playlist*));
+    //(*playlists)[insertingIndex] = NULL;
+    //(*playlists)[insertingIndex] = malloc(sizeof(Playlist*));
     (*playlists)[insertingIndex]->name = playlistName;
     (*playlists)[insertingIndex]->songs = NULL; // initialize songs list
     (*playlists)[insertingIndex]->songsNum = 0; //no songs yet
