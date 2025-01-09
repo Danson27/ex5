@@ -48,18 +48,16 @@ typedef struct Playlist {
 
 
 
-void watchPlaylists(Playlist **playlists, int *currentAmount);
+void watchPlaylists(Playlist ***playlists, int *currentAmount);
 void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount);
 void removePlaylist(Playlist **playlists, int *currentAmount);
-void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAmount);
+void displayPlaylistMenu(Playlist*** playlists, Playlist* playlist, int *currentAmount);
 void showPlaylist(Playlist* playlists, Playlist* playlist, int currentAmount);
 void printPlaylistsMenu();
 void sortPlaylist(Playlist *playlist);
-void freePlaylist();
 void addSong(Playlist* playlists, Playlist* playlist, int *currentAmount);
 void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount);
-void playSong();
-void freeSong();
+
 
 
 
@@ -100,7 +98,7 @@ int main() {
       switch (input) {
               // case 1 watch playlists: see all playlists
               case 1: {
-                  watchPlaylists(playlists, &playlistAmount);
+                  watchPlaylists(&playlists, &playlistAmount);
                   break;
               }
               // case 2 add playlist
@@ -149,7 +147,7 @@ int main() {
 
 
 
-void watchPlaylists(Playlist **playlists, int *currentAmount) {
+void watchPlaylists(Playlist ***playlists, int *currentAmount) {
   if (*currentAmount == 0) {
       printf("Choose a playlist:\n");
       printf("\t1. Back to main menu\n");
@@ -166,25 +164,21 @@ void watchPlaylists(Playlist **playlists, int *currentAmount) {
   }
   printf("Choose a playlist: \n");
   for (int i = 0; i < *currentAmount; i++) {
-      printf("\t%d. %s\n", i+1, playlists[i]->name);
+      printf("\t%d. %s\n", i+1, (*playlists)[i]->name);
   }
   printf("\t%d. Back to main menu\n", *currentAmount+1);
-
-
-
 
   int selection;
   scanf("%d", &selection);
   clearBuffer();
+
   while (selection < 1 || selection > *currentAmount + 1) {
       printf("Invalid option\n");
 
 
-
-
       printf("Choose a playlist: \n");
       for (int i = 0; i < *currentAmount; i++) {
-          printf("\t%d. %s\n", i + 1, playlists[i]->name);
+          printf("\t%d. %s\n", i + 1, (*playlists)[i]->name);
       }
       printf("\t%d. Back to main menu\n", *currentAmount + 1);
       scanf("%d", &selection);
@@ -195,11 +189,10 @@ void watchPlaylists(Playlist **playlists, int *currentAmount) {
   }
 
 
-
-
   if (selection >= 1 && selection <= *currentAmount) {
-      printf("playlist %s:\n", playlists[selection - 1]->name);
-      displayPlaylistMenu(*playlists, playlists[selection - 1], currentAmount);
+
+      printf("playlist %s:\n", (*playlists)[selection - 1]->name);
+      displayPlaylistMenu(playlists, (*playlists)[selection - 1], currentAmount);
   }
 }
 
@@ -211,6 +204,7 @@ void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount) {
       exit(1);
   }
   *playlists = temp;
+
   Playlist *newPlaylist = malloc(sizeof(Playlist));
   if (newPlaylist == NULL) {
       printf("Memory reallocation failed\n");
@@ -218,10 +212,23 @@ void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount) {
       exit(1);
   }
   printf("Enter playlist's name: \n");
-    char* name = readInput();
-  newPlaylist->name = name;
+  char* name = readInput();
+
+
+
+  newPlaylist->name = strdup(name);
+  if (newPlaylist->name == NULL) {
+      free(name);
+      free(newPlaylist);
+      free(*playlists);
+      exit(1);
+  }
+  free(name);
   newPlaylist->songs = NULL;
   newPlaylist->songsNum = 0;
+
+
+
 
   (*playlists)[*currentPlaylistAmount] = newPlaylist;
   (*currentPlaylistAmount)++;
@@ -325,7 +332,7 @@ void removePlaylist(Playlist ** playlists, int *currentPlaylistAmount) {
 }
 
 
-void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAmount) {
+void displayPlaylistMenu(Playlist*** playlists, Playlist* playlist, int *currentAmount) {
   int input;
   printf("\t1. Show Playlist\n"
                "\t2. Add Song\n"
@@ -337,21 +344,24 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAm
   clearBuffer();
   switch (input) {
       case 1: {
-          showPlaylist(playlists, playlist, *currentAmount);
+          showPlaylist(**playlists, playlist, *currentAmount);
+          displayPlaylistMenu(playlists, playlist, currentAmount);
           return;
       }
       case 2: {
-          addSong(playlists, playlist, currentAmount);
+          addSong(**playlists, playlist, currentAmount);
+          displayPlaylistMenu(playlists, playlist, currentAmount);
           return;
       }
       case 3: {
-          deleteSong(playlists, playlist, currentAmount);
-          break;
+          deleteSong(**playlists, playlist, currentAmount);
+          displayPlaylistMenu(playlists, playlist, currentAmount);
+          return;
       }
       case 4: {
           sortPlaylist(playlist);
           displayPlaylistMenu(playlists, playlist, currentAmount);
-          break;
+          return;
       }
       case 5: {
           //play Playlist
@@ -364,8 +374,9 @@ void displayPlaylistMenu(Playlist* playlists, Playlist* playlist, int *currentAm
           return;
       }
       case 6: {
-          watchPlaylists(&playlists, currentAmount);
-          break;
+
+          watchPlaylists(playlists, currentAmount);
+          return;
       }
       default: {
           printf("Invalid option\n");
@@ -395,7 +406,6 @@ void showPlaylist(Playlist* playlists, Playlist* playlist, int currentAmount) {
           scanf("%d", &input);
       }
   }
-  displayPlaylistMenu(playlists, playlist, &currentAmount);
 }
 
 
@@ -446,8 +456,6 @@ void addSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
   newSong->streams = 0;
 
 
-
-
   playlist->songs = (Song**)realloc(playlist->songs, (playlist->songsNum + 1) * sizeof(Song*));
   if (playlist->songs == NULL) {
       printf("Memory allocation failed\n");
@@ -465,9 +473,6 @@ void addSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
   playlist->songsNum++;
 
 
-
-
-  displayPlaylistMenu(playlists, playlist, currentAmount);
 }
 
 
@@ -488,6 +493,9 @@ void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
   printf("choose a song to delete, or 0 to quit:\n");
   scanf("%d", &input);
 
+
+
+
   free(playlist->songs[input-1]->title);
   free(playlist->songs[input-1]->artist);
   free(playlist->songs[input-1]->lyrics);
@@ -504,8 +512,10 @@ void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
       exit(1);
   }
   printf("Song deleted successfully.\n");
-  displayPlaylistMenu(playlists, playlist, currentAmount);
 }
+
+
+
 
 void sortPlaylist(Playlist *playlist) {
   int selection;
@@ -575,38 +585,50 @@ void sortPlaylist(Playlist *playlist) {
   }
 }
 
+
+
+
 void printPlaylistsMenu() {
   printf("Please Choose:\n");
   printf("\t1. Watch playlists\n\t2. Add playlist\n\t3. Remove playlist\n\t4. exit\n");
 }
 
-char* readInput() {
-    size_t bufferSize = 256; // Initial buffer size
-    char *buffer = malloc(bufferSize);
-    if (buffer == NULL) {
-        printf("Memory allocation failed for input buffer\n");
-        return NULL;
-    }
 
+
+char *readInput() {
+    char *input = NULL;
+    size_t size = 0;
     size_t length = 0;
-    int ch;
-    while ((ch = getchar()) != '\n' && ch != EOF) {
-        if (length + 1 >= bufferSize) { // Ensure space for the null terminator
-            bufferSize *= 2;
-            char *temp = realloc(buffer, bufferSize);
-            if (temp == NULL) {
-                printf("Memory reallocation failed\n");
-                free(buffer);
-                return NULL;
-            }
-            buffer = temp;
-        }
-        buffer[length++] = (char)ch;
-    }
-    buffer[length] = '\0'; // Null-terminate the string
+    char buffer[128];
 
-    return buffer;
+    while (fgets(buffer, sizeof(buffer), stdin)) {
+        size_t bufferLength = strlen(buffer);
+
+        if (buffer[bufferLength - 1] == '\n') {
+            buffer[bufferLength - 1] = '\0';
+            bufferLength--;
+        }
+
+        char *temp = realloc(input, length + bufferLength + 1);
+        if (!temp) {
+            free(input);
+            fprintf(stderr, "Memory allocation error.\n");
+            exit(EXIT_FAILURE);
+        }
+
+        input = temp;
+        memcpy(input + length, buffer, bufferLength);
+        length += bufferLength;
+        input[length] = '\0';
+
+        if (bufferLength < sizeof(buffer) - 1) {
+            break;
+        }
+    }
+
+    return input;
 }
+
 
 
 
@@ -622,4 +644,3 @@ void clearBuffer() {
 
 
 
-// newer
