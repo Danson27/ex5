@@ -65,6 +65,7 @@ void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount);
 // helper functions
 char* readInput();
 void clearBuffer();
+char* duplicateString(const char* str);
 
 
 
@@ -215,8 +216,7 @@ void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount) {
   char* name = readInput();
 
 
-
-  newPlaylist->name = strdup(name);
+  newPlaylist->name = duplicateString(name);
   if (newPlaylist->name == NULL) {
       free(name);
       free(newPlaylist);
@@ -388,6 +388,8 @@ void displayPlaylistMenu(Playlist*** playlists, Playlist* playlist, int *current
 
 
 void showPlaylist(Playlist* playlists, Playlist* playlist, int currentAmount) {
+    (void)playlists;
+    (void)currentAmount;
   for (int i = 0; i < playlist->songsNum; i++) {
       printf("%d. Title: %s \n", i+1, playlist->songs[i]->title);
       printf("   Artist: %s\n", playlist->songs[i]->artist);
@@ -412,7 +414,9 @@ void showPlaylist(Playlist* playlists, Playlist* playlist, int currentAmount) {
 
 
 void addSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
-  int yearOfRelease;
+    (void)playlists;  // Suppress unused parameter warning
+    (void)currentAmount;
+    int yearOfRelease;
   Song* newSong = (Song*)malloc(sizeof(Song));
   if (newSong == NULL) {
       printf("Memory allocation failed\n");
@@ -483,7 +487,9 @@ void addSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
 
 
 void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
-  for (int i = 0; i < playlist->songsNum; i++) {
+    (void)playlists;  // Suppress unused parameter warning
+    (void)currentAmount;
+    for (int i = 0; i < playlist->songsNum; i++) {
       printf("%d. Title: %s \n", i+1, playlist->songs[i]->title);
       printf("   Artist: %s\n", playlist->songs[i]->artist);
       printf("   Released: %d\n", playlist->songs[i]->year);
@@ -597,7 +603,6 @@ void printPlaylistsMenu() {
 
 char *readInput() {
     char *input = NULL;
-    size_t size = 0;
     size_t length = 0;
     char buffer[128];
 
@@ -640,7 +645,23 @@ void clearBuffer() {
 
 
 
+char* duplicateString(const char* str) {
+    if (str == NULL) {
+        return NULL; // Handle NULL input
+    }
 
+    // Allocate memory for the duplicate string
+    size_t length = strlen(str) + 1; // Include space for the null terminator
+    char* duplicate = malloc(length);
+    if (duplicate == NULL) {
+        printf("Memory allocation failed\n");
+        exit(1); // Exit on allocation failure
+    }
+
+    // Copy the string
+    strcpy(duplicate, str);
+    return duplicate;
+}
 
 
 
