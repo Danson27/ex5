@@ -580,31 +580,33 @@ void printPlaylistsMenu() {
   printf("\t1. Watch playlists\n\t2. Add playlist\n\t3. Remove playlist\n\t4. exit\n");
 }
 
-char *readInput() {
-    char *str = malloc(sizeof(char*)); // allocate memory for string
-    if (str == NULL) {
-        exit(1); // exit if memory allocation fails
+char* readInput() {
+    size_t bufferSize = 256; // Initial buffer size
+    char *buffer = malloc(bufferSize);
+    if (buffer == NULL) {
+        printf("Memory allocation failed for input buffer\n");
+        return NULL;
     }
-    int size = 0;
-    char c;
-    scanf(" %c", &c); // read first character
-    while (1) {
-        if (c == '\n' || c == '\r') {
-            break; // end of input when newline or carriage return is encountered
-        }
-        char *temp = realloc (str, sizeof(char) * size+1);
-        if (temp == NULL) {
-            printf("Memory allocation failed\n");
-            exit(1);
-        }
-        str = temp;
-        str[size++] = c; // add character to string
-        scanf("%c", &c); // read next character
-    }
-    str[size] = '\0'; // terminate the string
-    return str;
-}
 
+    size_t length = 0;
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF) {
+        if (length + 1 >= bufferSize) { // Ensure space for the null terminator
+            bufferSize *= 2;
+            char *temp = realloc(buffer, bufferSize);
+            if (temp == NULL) {
+                printf("Memory reallocation failed\n");
+                free(buffer);
+                return NULL;
+            }
+            buffer = temp;
+        }
+        buffer[length++] = (char)ch;
+    }
+    buffer[length] = '\0'; // Null-terminate the string
+
+    return buffer;
+}
 
 
 
@@ -616,7 +618,8 @@ void clearBuffer() {
 
 
 
-//new
 
 
 
+
+// newer
