@@ -143,64 +143,16 @@ void watchPlaylists(Playlist **playlists, int *currentAmount) {
         }
     }
 }
-/*
-void addPlaylist(Playlist ***playlists, int *currentPlaylistAmount) {
-    Playlist *newPlaylist = malloc(sizeof(Playlist));
-    if (newPlaylist == NULL) {
-        printf("Memory reallocation failed\n");
-        free(*playlists);
-        exit(1);
-    }
 
-    printf("Enter playlist's name: \n");
-    char* name = readInput();
-
-    size_t nameLength = strlen(name);
-
-    newPlaylist->name = malloc(nameLength+1);
-    if (newPlaylist->name == NULL) {
-        free(name);
-        free(newPlaylist);
-        free(*playlists);
-        exit(1);
-    }
-
-
-    strcpy(newPlaylist->name, name);
-    free(name);
-
-    newPlaylist->songs = NULL;
-    newPlaylist->songsNum = 0;
-    Playlist **temp =  realloc(*playlists, (*currentPlaylistAmount+1) * sizeof(Playlist*));
-    if (*playlists == NULL) {
-        printf("Memory reallocation failed\n");
-        exit(1);
-    }
-    *playlists = temp;
-
-    (*playlists)[*currentPlaylistAmount] = newPlaylist;
-    (*currentPlaylistAmount)++;
-}
-
-*/
 void addPlaylist(Playlist ***playlists, int *currentAmount) {
     *playlists = realloc(*playlists, sizeof(Playlist*) * (*currentAmount + 1)); //expand the playlist array
-    if (*playlists == NULL) {
-        printf("Error allocating memory for playlist\n");
-        exit(1);
-    }
-    Playlist* newPlaylist = malloc(sizeof(Playlist));
-    if (newPlaylist == NULL) {
-        printf("Error allocating memory for playlist\n");
-        exit(1);
-    }
+    int insertingIndex = *currentAmount;
     printf("Enter playlist's name:\n");
     char *playlistName = readInput(); // read playlist name
-    newPlaylist->name = playlistName;
-    newPlaylist->songs = NULL; // initialize songs list
-    newPlaylist->songsNum = 0; //no songs yet
-    (*playlists)[*currentAmount] = newPlaylist;
-
+    (*playlists)[insertingIndex] = malloc(sizeof(Playlist*));
+    (*playlists)[insertingIndex]->name = playlistName;
+    (*playlists)[insertingIndex]->songs = NULL; // initialize songs list
+    (*playlists)[insertingIndex]->songsNum = 0; //no songs yet
     *currentAmount = *currentAmount + 1; // increase the playlist counter
 }
 
@@ -433,17 +385,8 @@ void addSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
   playlist->songs[playlist->songsNum] = newSong;
   playlist->songsNum++;
 
-
-
-
   displayPlaylistMenu(&playlists, playlist, currentAmount);
 }
-
-
-
-
-
-
 
 
 void deleteSong(Playlist* playlists, Playlist* playlist, int *currentAmount) {
@@ -559,43 +502,8 @@ void printPlaylistsMenu() {
 }
 
 
-
-/*
-char* readInput() {
-  int size = 2;
-  char ch;
-  char* input = malloc(size * sizeof(char));
-  if (input == NULL) {
-      printf("Memory allocation failed\n");
-      free (input);
-      exit(1);
-  }
-  // Skip any leading newline characters
-  while (scanf("%c", &ch) && (ch == '\n' || ch == '\r')) {}
-  int index = 0;
-  while (ch != '\n' && ch != '\r') {
-      input[index] = ch;
-      index++;
-      if (index >= size) {
-          size *= 2;
-          char* temp = realloc(input, size * sizeof(char));
-          if (temp == NULL) {
-              printf("Memory allocation failed\n");
-              exit(1);
-          }
-          input = temp;
-      }
-      scanf ("%c", &ch);
-  }
-
-  input[index] = '\0';
-  return input;
-}
-
-
-
 char *readInput() {
-    char* str = (char*) malloc(1); // allocate memory for string
+    char *str = (char*) malloc(1); // allocate memory for string
     if (str == NULL) {
         exit(1); // exit if memory allocation fails
     }
@@ -606,46 +514,14 @@ char *readInput() {
         if (c == '\n' || c == '\r') {
             break; // end of input when newline or carriage return is encountered
         }
-        str = realloc(str, sizeof(char) * (size + 1));// reallocate memory for string
-        if (str == NULL) {
-            printf("Memory allocation failed\n");
-            exit(1);
-        }
+        str = realloc(str, sizeof(char) * (size + 1)); // reallocate memory for string
         str[size++] = c; // add character to string
         scanf("%c", &c); // read next character
     }
     str[size] = '\0'; // terminate the string
     return str;
 }
-*/
 
-char* readInput() {
-    size_t size = 16;  // Initial buffer size
-    size_t len = 0;    // Current length of input
-    char* buffer = malloc(size);
-    if (!buffer) {
-        printf("Error allocating memory for input\n");
-        exit(1);
-    }
-
-    int ch;
-    while ((ch = getchar()) != '\n' && ch != EOF || ch != '\r') {
-        if (len + 1 >= size) {  // Resize if buffer is full
-            size *= 2;
-            char* temp = realloc(buffer, size);
-            if (!temp) {
-                free(buffer);
-                printf("Error reallocating memory for input\n");
-                exit(1);
-            }
-            buffer = temp;
-        }
-        buffer[len++] = ch;  // Add character to the buffer
-    }
-    buffer[len] = '\0';  // Null-terminate the string
-
-    return buffer;
-}
 
 
 void clearBuffer() {
