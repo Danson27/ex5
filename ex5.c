@@ -592,7 +592,7 @@ char* readInput() {
   input[index] = '\0';
   return input;
 }
-*/
+
 
 
 char *readInput() {
@@ -617,6 +617,35 @@ char *readInput() {
     }
     str[size] = '\0'; // terminate the string
     return str;
+}
+*/
+
+char* readInput() {
+    size_t size = 16;  // Initial buffer size
+    size_t len = 0;    // Current length of input
+    char* buffer = malloc(size);
+    if (!buffer) {
+        printf("Error allocating memory for input\n");
+        exit(1);
+    }
+
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF || ch != '\r') {
+        if (len + 1 >= size) {  // Resize if buffer is full
+            size *= 2;
+            char* temp = realloc(buffer, size);
+            if (!temp) {
+                free(buffer);
+                printf("Error reallocating memory for input\n");
+                exit(1);
+            }
+            buffer = temp;
+        }
+        buffer[len++] = ch;  // Add character to the buffer
+    }
+    buffer[len] = '\0';  // Null-terminate the string
+
+    return buffer;
 }
 
 
