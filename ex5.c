@@ -108,7 +108,7 @@ int main() {
                   break;
               }
               case 3: {
-                  removePlaylist(playlists, &playlistAmount);
+                  removePlaylist(&playlists, &playlistAmount);
                   break;
               }
               case 4: {
